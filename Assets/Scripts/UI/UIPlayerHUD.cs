@@ -1,21 +1,39 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UIPlayerHUD : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI speedMeter;
+    [SerializeField] private TextMeshProUGUI pointsTxt;
     [SerializeField] private PlayerController playerController;
+    int totalPoints = 0;
 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Awake()
     {
-        
+        FsmManager.onCivilianDied += FsmManager_onCivilianDied;
+        FsmManager.onEnemyDied += FsmManager_onEnemyDied; ;
     }
 
-    // Update is called once per frame
+    void Start()
+    {
+        pointsTxt.text = totalPoints.ToString();
+    }
+
     void Update()
     {
         speedMeter.text = playerController.CurrentSpeed().ToString("0");
+    }
+
+    private void FsmManager_onEnemyDied()
+    {
+        totalPoints += 10;
+        pointsTxt.text = totalPoints.ToString();
+    }
+
+    private void FsmManager_onCivilianDied()
+    {
+        totalPoints -= 10;
+        pointsTxt.text = totalPoints.ToString();
     }
 }

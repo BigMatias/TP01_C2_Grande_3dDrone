@@ -1,15 +1,30 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] private PlayerDataSO playerDataSO;
     [SerializeField] private Camera firstPersonCamera;
     [SerializeField] private Camera thirdPersonCamera;
+    [SerializeField] private Transform playerPos;
+    [Header("Combat Settings")]
+    [SerializeField] private float shootRange = 100f;
+    [SerializeField] private float damage = 10f;
+    [SerializeField] private LayerMask hitLayers;
+    [Header("Visual Effects")]
+    [SerializeField] private LineRenderer laserLine;
+    [SerializeField] private float laserDuration = 0.05f;
+    [Header("Laser Sight Settings")]
+    [SerializeField] private LineRenderer laserSight;
+    [SerializeField] private Color laserAimColor = Color.red;
 
     private Rigidbody rb;
     private HealthSystem healthSystem;
-    
+    private Ray ray;
+    private bool isLaserSightActive = false;
+
     private void Awake()
     {
         healthSystem = GetComponent<HealthSystem>();
@@ -23,6 +38,25 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         ChangePerspective();
+        Shoot();
+        UpdateRay();
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            isLaserSightActive = !isLaserSightActive; 
+
+            if (!isLaserSightActive)
+            {
+                laserSight.enabled = false;
+            }
+        }
+
+        if (isLaserSightActive)
+        {
+            UpdateLaserSight();
+        }
+
+        Shoot();
     }
 
     private void FixedUpdate()
@@ -30,6 +64,7 @@ public class PlayerController : MonoBehaviour
         Movement();
         Rotate();        
     }
+
     private void ChangePerspective()
     {
         if (Input.GetKeyDown(KeyCode.V))
@@ -78,6 +113,58 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void Shoot()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            RaycastHit hit;
+            Vector3 endPoint;
+            laserLine.SetPosition(0, playerPos.position);
+
+            if (Physics.Raycast(ray, out hit, shootRange, hitLayers))
+            {
+                Debug.Log("Impacto en: " + hit.collider.name);
+                endPoint = hit.point;
+
+                HealthSystem targetHealth = hit.collider.GetComponent<HealthSystem>();
+                if (targetHealth != null)
+                {
+                    targetHealth.DoDamage(damage);
+                }
+                
+            }
+            else
+            {
+                endPoint = playerPos.position + (ray.direction * shootRange);
+            }
+            laserLine.SetPosition(1, endPoint);
+            StartCoroutine(ShootEffectSequence());
+        }
+    }
+
+    private void UpdateRay()
+    {
+        Camera activeCam = firstPersonCamera.gameObject.activeSelf ? firstPersonCamera : thirdPersonCamera;
+        ray = activeCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+    }
+
+    private void UpdateLaserSight()
+    {
+        if (!laserSight.enabled) laserSight.enabled = true;
+
+        RaycastHit hit;
+        laserSight.SetPosition(0, playerPos.position);
+
+        if (Physics.Raycast(ray, out hit, shootRange, hitLayers))
+        {
+            laserSight.SetPosition(1, hit.point);
+        }
+        else
+        {
+            laserSight.SetPosition(1, playerPos.position + (ray.direction * shootRange));
+        }
+    }
+
     private void Rotate()
     {
         Vector3 angle = new Vector3(playerDataSO.MouseSens * (Input.GetAxis("Mouse Y") * - 1), playerDataSO.MouseSens * Input.GetAxis("Mouse X"));
@@ -114,6 +201,13 @@ public class PlayerController : MonoBehaviour
         {
             healthSystem.DoDamage(playerDataSO.CrashDamage3);
         }
+    }
+
+    private IEnumerator ShootEffectSequence()
+    {
+        laserLine.enabled = true; 
+        yield return new WaitForSeconds(laserDuration);
+        laserLine.enabled = false; 
     }
 
 }
