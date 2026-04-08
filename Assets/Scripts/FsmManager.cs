@@ -5,6 +5,7 @@ using UnityEngine.AI;
 
 public class FsmManager : MonoBehaviour
 {
+    [SerializeField] private CitizenDataSO citizenDataSO;
     [SerializeField] private NpcType npcType;
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject playerTarget;
@@ -18,7 +19,9 @@ public class FsmManager : MonoBehaviour
     public static event Action onEnemyDied;
     public static event Action onCivilianDied;
 
+    private CitizensSpawner citizenSpawner;
     public Transform[] waypoints;
+    private GameObject waypointsHolder;
     private List<StateBase> states = new List<StateBase>();
     private StateBase currentState;
     private float shootCdAux;
@@ -28,6 +31,9 @@ public class FsmManager : MonoBehaviour
     {
         healthSystem = GetComponent<HealthSystem>();
         healthSystem.onDie += HealthSystem_onDie;
+
+        waypointsHolder = GameObject.Find("Waypoints");
+        citizenSpawner = GameObject.Find("Ciudadanos").GetComponent<CitizensSpawner>();
 
         states.Add(new StateIdle());
         states.Add(new StateWalking());
@@ -42,6 +48,13 @@ public class FsmManager : MonoBehaviour
 
     private void Start()
     {
+        waypoints = new Transform[waypointsHolder.transform.childCount];
+        playerTarget = PlayerController.Instance.gameObject;
+
+        for (int i = 0; i < waypointsHolder.transform.childCount; i++)
+        {
+            waypoints[i] = waypointsHolder.transform.GetChild(i);
+        }
         if (npcType == NpcType.Civilian)
         {
             SwitchState(StateType.Walking);
@@ -141,7 +154,12 @@ public class FsmManager : MonoBehaviour
         shootCdAux -= Time.deltaTime;
         if (shootCdAux <= 0)
         {
-            GameObject bullet = Instantiate(projectilePrefab, shootPoint.position, Quaternion.identity);
+            GameObject bullet = citizenSpawner.GetBullet();
+
+            bullet.SetActive(true);
+
+            bullet.transform.position = shootPoint.position;
+            bullet.transform.rotation = Quaternion.identity;
 
             Bullet p = bullet.GetComponent<Bullet>();
 
@@ -149,6 +167,4 @@ public class FsmManager : MonoBehaviour
             shootCdAux = shootCooldown;
         }
     }
-
-
 }

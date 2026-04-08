@@ -116,7 +116,6 @@ public class StateShoot : StateBase
         agent.isStopped = true;
         agent.updateRotation = false;
         animator.SetInteger(State, (int)StateType.Shoot);
-
     }
 
     public override void OnUpdate()

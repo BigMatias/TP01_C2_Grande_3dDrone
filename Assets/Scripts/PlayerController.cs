@@ -1,14 +1,17 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private PlayerDataSO playerDataSO;
+    [SerializeField] private GameObject bullet;
     [SerializeField] private Camera firstPersonCamera;
     [SerializeField] private Camera thirdPersonCamera;
     [SerializeField] private Transform playerPos;
+    [SerializeField] private Transform shootPoint;
     [Header("Combat Settings")]
     [SerializeField] private float shootRange = 100f;
     [SerializeField] private float damage = 10f;
@@ -18,27 +21,36 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float laserDuration = 0.05f;
     [Header("Laser Sight Settings")]
     [SerializeField] private LineRenderer laserSight;
-    [SerializeField] private Color laserAimColor = Color.red;
 
+    private Queue<GameObject> bulletPool = new Queue<GameObject>();
+
+    private Transform playerBullets;
     private Rigidbody rb;
     private HealthSystem healthSystem;
     private Ray ray;
     private bool isLaserSightActive = false;
 
+    public static event Action onPlayerDied;
+    public static PlayerController Instance;
+    private float shootCdAux;
+
     private void Awake()
     {
+        Instance  = this;
+        playerBullets = transform.Find("PlayerBullets");
         healthSystem = GetComponent<HealthSystem>();
         rb = GetComponent<Rigidbody>();
     }
 
     private void Start()
     {
+        bulletPool = new Queue<GameObject>();
+        InstantiateBullets();
     }
 
     private void Update()
     {
         ChangePerspective();
-        Shoot();
         UpdateRay();
 
         if (Input.GetKeyDown(KeyCode.C))
@@ -57,12 +69,23 @@ public class PlayerController : MonoBehaviour
         }
 
         Shoot();
+        SecondaryShoot();
     }
 
     private void FixedUpdate()
     {
         Movement();
         Rotate();        
+    }
+
+    private void InstantiateBullets()
+    {
+        for (int i = 0; i < playerDataSO.BulletQuantityInstantiate; i++)
+        {
+            GameObject obj = Instantiate(bullet, playerBullets);
+            bulletPool.Enqueue(obj);
+            obj.SetActive(false);
+        }
     }
 
     private void ChangePerspective()
@@ -142,6 +165,29 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void SecondaryShoot()
+    {
+        shootCdAux -= Time.deltaTime;
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            if (shootCdAux <= 0)
+            {
+                Debug.Log("asda");
+                GameObject bullet = bulletPool.Dequeue();
+                bullet.SetActive(true);
+
+                Camera activeCam = firstPersonCamera.gameObject.activeSelf ? firstPersonCamera : thirdPersonCamera;
+                Vector3 direction = activeCam.transform.forward;
+
+                PlayerBullet p = bullet.GetComponent<PlayerBullet>();
+                p.Init(shootPoint.position, direction, playerDataSO.BulletSpeed);
+
+                shootCdAux = playerDataSO.SecondaryShotCD;
+            }
+        }
+    }
+
     private void UpdateRay()
     {
         Camera activeCam = firstPersonCamera.gameObject.activeSelf ? firstPersonCamera : thirdPersonCamera;
@@ -209,5 +255,9 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(laserDuration);
         laserLine.enabled = false; 
     }
-
+    public void ReturnBulletToPool(GameObject obj)
+    {
+        bulletPool.Enqueue(obj);
+        obj.SetActive(false);
+    }
 }

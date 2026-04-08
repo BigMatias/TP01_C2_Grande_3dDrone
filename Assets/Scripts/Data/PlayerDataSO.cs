@@ -14,6 +14,10 @@ public class PlayerDataSO : ScriptableObject
     public float MouseSens;
     public float Acceleration;
     public float MaxSpeed;
+    public float BulletSpeed;
+    public float SecondaryShotDamage;
+    public float SecondaryShotCD;
+    public float BulletQuantityInstantiate;
     [Header("Damage Depending on Speed")]
     public float FirstSpeedThreshold;
     public float SecondSpeedThreshold;
