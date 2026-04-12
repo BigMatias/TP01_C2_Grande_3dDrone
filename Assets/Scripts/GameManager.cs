@@ -13,6 +13,10 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
     }
 
+    private void Start()
+    {
+    }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -46,4 +50,5 @@ public class GameManager : MonoBehaviour
             gamePaused = false;
         }
     }
+
 }

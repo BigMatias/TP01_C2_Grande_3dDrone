@@ -93,7 +93,7 @@ public class CitizensSpawner : MonoBehaviour
                         int index = Random.Range(0, spawnPoints.Length);
                         Transform spawnPoint = spawnPoints[index];
 
-                        obj = enemyPool.Dequeue();
+                        obj = civilianPool.Dequeue();
 
                         obj.transform.position = spawnPoint.position;
 
@@ -128,7 +128,7 @@ public class CitizensSpawner : MonoBehaviour
                         int index = Random.Range(0, spawnPoints.Length);
                         Transform spawnPoint = spawnPoints[index];
 
-                        obj = enemyPool.Dequeue();
+                        obj = civilianPool.Dequeue();
 
                         obj.transform.position = spawnPoint.position;
 
@@ -150,9 +150,15 @@ public class CitizensSpawner : MonoBehaviour
         }
     }
 
-    public void ReturnToPool(GameObject obj)
+    public void ReturnEnemyToPool(GameObject obj)
     {
         enemyPool.Enqueue(obj);
+        obj.SetActive(false);
+    }
+
+    public void ReturnCivilianToPool(GameObject obj)
+    {
+        civilianPool.Enqueue(obj);
         obj.SetActive(false);
     }
 

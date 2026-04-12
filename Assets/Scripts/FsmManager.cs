@@ -81,13 +81,13 @@ public class FsmManager : MonoBehaviour
             case NpcType.Enemy:
                 {
                     onEnemyDied?.Invoke();
-                    gameObject.SetActive(false);
+                    citizenSpawner.ReturnEnemyToPool(gameObject);
                     break;
                 }
             case NpcType.Civilian:
                 {
                     onCivilianDied?.Invoke();
-                    gameObject.SetActive(false);
+                    citizenSpawner.ReturnCivilianToPool(gameObject);
                     break;
                 }
         }

@@ -6,9 +6,11 @@ public class GameDataSO : ScriptableObject
 {
     [Header("Levels")]
     public float CurrentScore;
-    public float ScoreLevel1;
-    public float ScoreLevel2;
-    public float ScoreLevel3;
+    public float TotalScore;
+    public float PointsOnKill;
+    public float PointsReducedOnKill;
     public float CurrentLevel;
+    public float EnemiesLeft;
+    public float EnemiesNeededToKill;
 
 }

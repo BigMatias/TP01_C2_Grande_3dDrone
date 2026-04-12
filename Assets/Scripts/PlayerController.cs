@@ -39,6 +39,7 @@ public class PlayerController : MonoBehaviour
         Instance  = this;
         playerBullets = transform.Find("PlayerBullets");
         healthSystem = GetComponent<HealthSystem>();
+        healthSystem.onDie += HealthSystem_onDie;
         rb = GetComponent<Rigidbody>();
     }
 
@@ -76,6 +77,11 @@ public class PlayerController : MonoBehaviour
     {
         Movement();
         Rotate();        
+    }
+
+    private void HealthSystem_onDie()
+    {
+        onPlayerDied?.Invoke();
     }
 
     private void InstantiateBullets()

@@ -1,11 +1,13 @@
+using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class UIGameOver : MonoBehaviour
+public class UIGameCompleted : MonoBehaviour
 {
-    [SerializeField] private GameObject gameOverPanel;
-    [SerializeField] private GameManager gameManager;
+    [SerializeField] private GameDataSO gameDataSO;
+    [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private Button retryBtn;
     [SerializeField] private Button mainMenuBtn;
 
@@ -13,6 +15,11 @@ public class UIGameOver : MonoBehaviour
     {
         retryBtn.onClick.AddListener(OnYesBtnClicked);
         mainMenuBtn.onClick.AddListener(OnNoBtnClicked);
+    }
+
+    private void Start()
+    {
+        scoreText.text = gameDataSO.TotalScore.ToString();
     }
 
     private void OnDestroy()
@@ -23,13 +30,12 @@ public class UIGameOver : MonoBehaviour
 
     private void OnYesBtnClicked()
     {
+        gameDataSO.CurrentLevel = 1;
         SceneManager.LoadScene("GameScene");
     }
 
     private void OnNoBtnClicked()
     {
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("MainMenuScene");
     }
-
-
 }

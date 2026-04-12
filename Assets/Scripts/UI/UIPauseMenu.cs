@@ -41,7 +41,7 @@ public class UIPauseMenu : MonoBehaviour
 
     private void OnExitBtnClicked()
     {
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("MainMenuScene");
     }
 
 

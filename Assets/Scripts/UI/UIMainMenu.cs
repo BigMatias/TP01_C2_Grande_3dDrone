@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class UIMainMenu : MonoBehaviour
 {
+    [SerializeField] private GameDataSO gameDataSO;
     [SerializeField] private Button[] mainMenuButtons;
     [SerializeField] private GameObject optionsMenu;
     [SerializeField] private GameObject mainMenuPanel;
@@ -29,6 +30,7 @@ public class UIMainMenu : MonoBehaviour
 
     private void OnPlayBtnClicked()
     {
+        gameDataSO.CurrentLevel = 1;
         gameObject.SetActive(false);
         SceneManager.LoadScene("GameScene");
     }

@@ -16,7 +16,6 @@ public class UIOptions : MonoBehaviour
 
     private void Awake()
     {
-        //Inicializar valor de los sliders con valor actual de su grupo de sonido
         float masterVol;
         audioMixer.GetFloat("VolumeMaster", out masterVol);
         master.value = masterVol;
