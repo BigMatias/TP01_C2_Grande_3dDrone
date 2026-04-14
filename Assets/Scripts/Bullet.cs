@@ -3,7 +3,6 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [SerializeField] private CitizenDataSO citizenDataSO;
-    [SerializeField] float bulletLifeTime;
 
     private CitizensSpawner spawner;
     private Vector3 startPos;
@@ -21,7 +20,7 @@ public class Bullet : MonoBehaviour
 
     private void Start()
     {
-        bulletLifeTimeAux = bulletLifeTime;
+        bulletLifeTimeAux = citizenDataSO.EnemyBulletLifeTime;
     }
 
     void Update()
@@ -40,11 +39,12 @@ public class Bullet : MonoBehaviour
 
         transform.position = Vector3.Lerp(startPos, targetPos, t);
 
-        bulletLifeTime -= Time.deltaTime;
+        bulletLifeTimeAux -= Time.deltaTime;
 
         if (bulletLifeTimeAux <= 0)
         {
             spawner.ReturnBulletToPool(gameObject);
+            bulletLifeTimeAux = citizenDataSO.EnemyBulletLifeTime;
         }
     }
 
@@ -70,7 +70,7 @@ public class Bullet : MonoBehaviour
         if (collision.gameObject.layer == (int)Layers.Player)
         {
             HealthSystem targetHealth = collision.gameObject.GetComponent<HealthSystem>();
-            targetHealth.DoDamage(citizenDataSO.EnemyDamage);
+            targetHealth.DoDamage(citizenDataSO.EnemyBulletDamage);
         }
         spawner.ReturnBulletToPool(gameObject);
         

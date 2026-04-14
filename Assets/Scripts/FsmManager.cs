@@ -13,8 +13,6 @@ public class FsmManager : MonoBehaviour
     [SerializeField] private GameObject gun;
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform shootPoint;
-    [SerializeField] private float shootCooldown;
-    [SerializeField] private float bulletSpeed;
 
     public static event Action onEnemyDied;
     public static event Action onCivilianDied;
@@ -34,6 +32,8 @@ public class FsmManager : MonoBehaviour
 
         waypointsHolder = GameObject.Find("Waypoints");
         citizenSpawner = GameObject.Find("Ciudadanos").GetComponent<CitizensSpawner>();
+        waypoints = new Transform[waypointsHolder.transform.childCount];
+        playerTarget = GameObject.Find("Racing Drone Merged");
 
         states.Add(new StateIdle());
         states.Add(new StateWalking());
@@ -48,9 +48,6 @@ public class FsmManager : MonoBehaviour
 
     private void Start()
     {
-        waypoints = new Transform[waypointsHolder.transform.childCount];
-        playerTarget = PlayerController.Instance.gameObject;
-
         for (int i = 0; i < waypointsHolder.transform.childCount; i++)
         {
             waypoints[i] = waypointsHolder.transform.GetChild(i);
@@ -154,6 +151,7 @@ public class FsmManager : MonoBehaviour
         shootCdAux -= Time.deltaTime;
         if (shootCdAux <= 0)
         {
+            Debug.Log("shoot");
             GameObject bullet = citizenSpawner.GetBullet();
 
             bullet.SetActive(true);
@@ -163,8 +161,8 @@ public class FsmManager : MonoBehaviour
 
             Bullet p = bullet.GetComponent<Bullet>();
 
-            p.Init(shootPoint.position, playerTarget.transform.position, bulletSpeed);
-            shootCdAux = shootCooldown;
+            p.Init(shootPoint.position, playerTarget.transform.position, citizenDataSO.EnemyBulletSpeed);
+            shootCdAux = citizenDataSO.EnemyShootCD;
         }
     }
 }

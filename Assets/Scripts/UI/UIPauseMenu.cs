@@ -12,7 +12,6 @@ public class UIPauseMenu : MonoBehaviour
     [SerializeField] private Button optionsBtn;
     [SerializeField] private Button exitBtn;
 
-
     private void Awake()
     {
         resumeBtn.onClick.AddListener(OnResumeBtnClicked);

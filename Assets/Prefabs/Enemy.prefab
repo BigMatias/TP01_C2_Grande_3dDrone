@@ -49,6 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1201d3f842eebe42943f05da1be9e19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FsmManager
+  citizenDataSO: {fileID: 11400000, guid: 64c7a00b438b2124a8a3701f19f76294, type: 2}
   npcType: 0
   animator: {fileID: 1160490161543447896}
   playerTarget: {fileID: 0}
@@ -56,8 +57,6 @@ MonoBehaviour:
   gun: {fileID: 726719081631038543}
   projectilePrefab: {fileID: 1216306449715067165, guid: e54e1fd40f7075744ab21ef92e7aaf72, type: 3}
   shootPoint: {fileID: 764184929099613251}
-  shootCooldown: 1
-  bulletSpeed: 40
   waypoints:
   - {fileID: 0}
   - {fileID: 0}

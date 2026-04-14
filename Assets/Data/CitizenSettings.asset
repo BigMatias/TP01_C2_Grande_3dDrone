@@ -14,7 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CitizenDataSO
   Speed: 0
   MaxSpeed: 0
-  EnemyDamage: 0
+  EnemyBulletDamage: 5
+  EnemyBulletSpeed: 20
+  EnemyBulletLifeTime: 5
+  EnemyShootCD: 1
   BulletInstantiateQuantity: 100
   EnemySpawnQuantityLevel1: 5
   EnemySpawnQuantityLevel2: 10

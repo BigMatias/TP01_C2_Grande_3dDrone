@@ -8,7 +8,10 @@ public class CitizenDataSO : ScriptableObject
     public float Speed;
     public float MaxSpeed;
     [Header("Enemy Settings")]
-    public float EnemyDamage;
+    public float EnemyBulletDamage;
+    public float EnemyBulletSpeed;
+    public float EnemyBulletLifeTime;
+    public float EnemyShootCD;
     public float BulletInstantiateQuantity;
     public float EnemySpawnQuantityLevel1;
     public float EnemySpawnQuantityLevel2;
