@@ -15,6 +15,7 @@ public class FsmManager : MonoBehaviour
     [SerializeField] private Transform shootPoint;
 
     public static event Action onEnemyDied;
+    public static event Action onEnemyShoot;
     public static event Action onCivilianDied;
 
     private CitizensSpawner citizenSpawner;
@@ -151,7 +152,7 @@ public class FsmManager : MonoBehaviour
         shootCdAux -= Time.deltaTime;
         if (shootCdAux <= 0)
         {
-            Debug.Log("shoot");
+            onEnemyShoot?.Invoke();
             GameObject bullet = citizenSpawner.GetBullet();
 
             bullet.SetActive(true);

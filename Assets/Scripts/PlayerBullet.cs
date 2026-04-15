@@ -2,50 +2,64 @@ using UnityEngine;
 
 public class PlayerBullet : MonoBehaviour
 {
-    [SerializeField] private PlayerDataSO playerDataSO;
-    [SerializeField] float bulletLifeTime;
+    [SerializeField] private float bulletLifeTime = 2f;
 
     private PlayerController playerController;
 
-    private float speed;
-    private float bulletLifeTimeAux;
-    private Vector3 direction;
+    private Vector3 startPoint;
+    private Vector3 endPoint;
+    private float height;
+
+    private float time;
+    private float duration;
 
     private void Awake()
     {
         playerController = GameObject.Find("Player").GetComponent<PlayerController>();
     }
 
-    private void Start()
-    {
-    }
-
     void Update()
     {
-        transform.position += direction * speed * Time.deltaTime;
-        bulletLifeTimeAux -= Time.deltaTime;
-        if (bulletLifeTimeAux <= 0)
+        time += Time.deltaTime;
+
+        float t = time / duration;
+
+        if (t >= 1f)
         {
             playerController.ReturnBulletToPool(gameObject);
+            return;
         }
+
+        Vector3 pos = Vector3.Lerp(startPoint, endPoint, t);
+
+        float yOffset = height * 4f * (t * (1 - t));
+
+        pos.y += yOffset;
+
+        transform.position = pos;
     }
 
-    public void Init(Vector3 start, Vector3 dir, float bulletSpeed)
+    public void Init(Vector3 start, Vector3 end, float arcHeight, float speed)
     {
-        transform.position = start;
-        direction = dir.normalized;
-        speed = bulletSpeed;
-        bulletLifeTimeAux = bulletLifeTime;
+        startPoint = start;
+        endPoint = end;
+        height = arcHeight;
+
+        float distance = Vector3.Distance(start, end);
+
+        duration = distance / speed; 
+
+        time = 0f;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.gameObject.layer == (int)Layers.Enemy)
+        if (other.gameObject.layer == (int)Layers.Enemy || other.gameObject.layer == (int)Layers.Civilian)
         {
-            HealthSystem targetHealth = collision.gameObject.GetComponent<HealthSystem>();
-            targetHealth.DoDamage(playerDataSO.SecondaryShotDamage);
-        }
-        playerController.ReturnBulletToPool(gameObject);
+            playerController.ReturnBulletToPool(gameObject);
 
+            HealthSystem targetHealth = other.gameObject.GetComponent<HealthSystem>();
+            targetHealth.DoDamage(100);
+        }
     }
 }

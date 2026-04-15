@@ -31,6 +31,10 @@ public class PlayerController : MonoBehaviour
     private bool isLaserSightActive = false;
 
     public static event Action onPlayerDied;
+    public static event Action onPlayerShootM1;
+    public static event Action onPlayerShootM2;
+    public static event Action onPlayerHurt;
+
     public static PlayerController Instance;
     private float shootCdAux;
 
@@ -40,6 +44,7 @@ public class PlayerController : MonoBehaviour
         playerBullets = transform.Find("PlayerBullets");
         healthSystem = GetComponent<HealthSystem>();
         healthSystem.onDie += HealthSystem_onDie;
+        healthSystem.onDamageDealt += HealthSystem_onDamageDealt; ;
         rb = GetComponent<Rigidbody>();
     }
 
@@ -53,7 +58,7 @@ public class PlayerController : MonoBehaviour
     {
         ChangePerspective();
         UpdateRay();
-
+        HandleRotation();
         if (Input.GetKeyDown(KeyCode.C))
         {
             isLaserSightActive = !isLaserSightActive; 
@@ -83,7 +88,10 @@ public class PlayerController : MonoBehaviour
     {
         onPlayerDied?.Invoke();
     }
-
+    private void HealthSystem_onDamageDealt()
+    {
+        onPlayerHurt?.Invoke();
+    }
     private void InstantiateBullets()
     {
         for (int i = 0; i < playerDataSO.BulletQuantityInstantiate; i++)
@@ -141,11 +149,24 @@ public class PlayerController : MonoBehaviour
             rb.AddForce(Vector3.up * playerDataSO.Acceleration, ForceMode.Acceleration);
         }
     }
+    private void HandleRotation()
+    {
+        float rotationInput = 0f;
+
+        if (Input.GetKey(playerDataSO.RotateLeft))
+            rotationInput = 1f;
+
+        if (Input.GetKey(playerDataSO.RotateRight))
+            rotationInput = -1f;
+
+        transform.Rotate(0f, 0f, rotationInput * playerDataSO.RotationSpeed * Time.deltaTime);
+    }
 
     private void Shoot()
     {
         if (Input.GetMouseButtonDown(0))
         {
+            onPlayerShootM1?.Invoke();
             RaycastHit hit;
             Vector3 endPoint;
             laserLine.SetPosition(0, playerPos.position);
@@ -177,20 +198,31 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-            if (shootCdAux <= 0)
+            onPlayerShootM2?.Invoke();
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            Vector3 targetPoint;
+
+            if (Physics.Raycast(ray, out RaycastHit hit, 100f))
             {
-                Debug.Log("asda");
-                GameObject bullet = bulletPool.Dequeue();
-                bullet.SetActive(true);
-
-                Camera activeCam = firstPersonCamera.gameObject.activeSelf ? firstPersonCamera : thirdPersonCamera;
-                Vector3 direction = activeCam.transform.forward;
-
-                PlayerBullet p = bullet.GetComponent<PlayerBullet>();
-                p.Init(shootPoint.position, direction, playerDataSO.BulletSpeed);
-
-                shootCdAux = playerDataSO.SecondaryShotCD;
+                targetPoint = hit.point;
             }
+            else
+            {
+                targetPoint = ray.origin + ray.direction * 50f;
+            }
+
+            GameObject bullet = bulletPool.Dequeue();
+
+            bullet.SetActive(true);
+
+            bullet.GetComponent<PlayerBullet>().Init(
+                shootPoint.position,
+                targetPoint,
+                2f,       
+                playerDataSO.BulletSpeed        
+            );
         }
     }
 

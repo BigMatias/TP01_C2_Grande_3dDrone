@@ -5,7 +5,7 @@ public class CitizensSpawner : MonoBehaviour
 {
     [SerializeField] private GameDataSO gameDataSO;
     [SerializeField] private CitizenDataSO citizenDataSO;
-    [SerializeField] private Transform[] spawnPoints;
+    [SerializeField] private GameObject spawnPointsHolder;
     [SerializeField] private GameObject enemy;
     [SerializeField] private GameObject bullet;
     [SerializeField] private Transform enemiesParent;
@@ -16,10 +16,15 @@ public class CitizensSpawner : MonoBehaviour
     private Queue<GameObject> bulletPool = new Queue<GameObject>();
     private Queue<GameObject> enemyPool = new Queue<GameObject>();
     private Queue<GameObject> civilianPool = new Queue<GameObject>();
-
+    private Transform[] spawnPoints;
 
     void Start()
     {
+        spawnPoints = new Transform[spawnPointsHolder.transform.childCount];
+        for (int i = 0; i < spawnPointsHolder.transform.childCount; i++)
+        {
+            spawnPoints[i] = spawnPointsHolder.transform.GetChild(i);
+        }
         enemyPool = new Queue<GameObject>();
         civilianPool = new Queue<GameObject>();
         bulletPool = new Queue<GameObject>();

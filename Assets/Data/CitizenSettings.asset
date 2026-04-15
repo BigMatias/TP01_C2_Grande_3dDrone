@@ -18,10 +18,10 @@ MonoBehaviour:
   EnemyBulletSpeed: 20
   EnemyBulletLifeTime: 5
   EnemyShootCD: 1
-  BulletInstantiateQuantity: 100
-  EnemySpawnQuantityLevel1: 5
-  EnemySpawnQuantityLevel2: 10
-  EnemySpawnQuantityLevel3: 20
-  CivilianSpawnQuantityLevel1: 7
-  CivilianSpawnQuantityLevel2: 12
-  CivilianSpawnQuantityLevel3: 22
+  BulletInstantiateQuantity: 200
+  EnemySpawnQuantityLevel1: 10
+  EnemySpawnQuantityLevel2: 20
+  EnemySpawnQuantityLevel3: 30
+  CivilianSpawnQuantityLevel1: 12
+  CivilianSpawnQuantityLevel2: 22
+  CivilianSpawnQuantityLevel3: 32

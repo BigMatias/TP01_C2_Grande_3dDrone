@@ -11,6 +11,7 @@ public class PlayerDataSO : ScriptableObject
     public KeyCode RotateRight;
     [Header("General Configs")]
     public float Speed;
+    public float RotationSpeed;
     public float MouseSens;
     public float Acceleration;
     public float MaxSpeed;

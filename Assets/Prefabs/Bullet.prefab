@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -172.83167, y: 2.37602, z: 92.72029}
-  m_LocalScale: {x: 0.02, y: 0.02, z: 0.494715}
+  m_LocalScale: {x: 0.05, y: 0.05, z: 0.494715}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -127,7 +127,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   citizenDataSO: {fileID: 11400000, guid: 64c7a00b438b2124a8a3701f19f76294, type: 2}
-  bulletLifeTime: 10
 --- !u!54 &7225341889794072015
 Rigidbody:
   m_ObjectHideFlags: 0

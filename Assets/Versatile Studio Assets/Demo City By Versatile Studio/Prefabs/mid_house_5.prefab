@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8488628059555217759}
   - component: {fileID: 1392186580167002527}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Light Probe Group
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -294,7 +294,7 @@ GameObject:
   - component: {fileID: 7861162140106023642}
   - component: {fileID: 5403336697240098320}
   - component: {fileID: 1429639752111668405}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: mid_house_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -410,7 +410,7 @@ GameObject:
   - component: {fileID: 5226554753669823179}
   - component: {fileID: 7665528486934890222}
   - component: {fileID: 3910015756955848098}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Area Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}

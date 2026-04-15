@@ -17,11 +17,11 @@ MonoBehaviour:
   RotateLeft: 113
   RotateRight: 101
   Speed: 10
+  RotationSpeed: 100
   MouseSens: 4
   Acceleration: 20
   MaxSpeed: 50
-  ShootCooldownM2: 0
-  BulletSpeed: 5
+  BulletSpeed: 20
   SecondaryShotDamage: 100
   SecondaryShotCD: 2
   BulletQuantityInstantiate: 50
