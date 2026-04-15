@@ -11,7 +11,7 @@ https://bigmatthew.itch.io/drone-commando
 * V: Cambiar perspectiva
 * C: Laser
   
-###Objetivo
+### Objetivo
 Deberás eliminar a todos los enemigos en 3 niveles separados, eliminar enemigos otorga 10 puntos, eliminar civiles resta 10 puntos.
 
 ### By
