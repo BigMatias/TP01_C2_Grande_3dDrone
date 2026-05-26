@@ -23,6 +23,7 @@ public class LevelManager : MonoBehaviour
 
     void Start()
     {
+        // Warning: [Media] - CurrentLevel es float en el SO y se compara contra enteros / se usa en switch. Por imprecisión de punto flotante esto puede fallar; debería ser int.
         if (gameDataSO.CurrentLevel <= 1)
         {
             gameDataSO.TotalScore = 0;
@@ -36,6 +37,7 @@ public class LevelManager : MonoBehaviour
             onGameOver?.Invoke(true);
         }
 
+        // Suggestion: [Media] - Tres cases idénticos que sólo cambian el campo del SO. Un array EnemySpawnQuantityPerLevel[] indexado por nivel elimina el switch y desbloquea agregar niveles sin tocar código.
         switch (gameDataSO.CurrentLevel)
         {
             case 1:
@@ -53,6 +55,7 @@ public class LevelManager : MonoBehaviour
                     gameDataSO.EnemiesNeededToKill = citizenDataSO.EnemySpawnQuantityLevel3;
                     break;
                 }
+            // Warning: [Baja] - Sin default case: si CurrentLevel viene en 0 (estado inicial nunca seteado) se rompe.
         }
         gameDataSO.EnemiesLeft = gameDataSO.EnemiesNeededToKill;
     }
@@ -91,6 +94,7 @@ public class LevelManager : MonoBehaviour
     {
         onLevelFinished?.Invoke();
         gameDataSO.TotalScore += gameDataSO.CurrentScore;
+        // Bug: [Alta] - El ScriptableObject persiste su estado entre sesiones en el editor. CurrentLevel se incrementa.
         gameDataSO.CurrentLevel += 1;
         yield return new WaitForSeconds(3);
         SceneManager.LoadScene("GameScene");

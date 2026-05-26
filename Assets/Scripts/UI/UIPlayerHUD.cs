@@ -28,6 +28,7 @@ public class UIPlayerHUD : MonoBehaviour
 
     void Update()
     {
+        // Warning: [Alta] - ToString("0") asigna un nuevo string cada frame → presión sostenida sobre el GC. Cachear el último valor entero y actualizar el texto sólo si cambió respecto al frame anterior.
         speedMeter.text = playerController.CurrentSpeed().ToString("0");
     }
 
@@ -46,6 +47,8 @@ public class UIPlayerHUD : MonoBehaviour
 
     private void FsmManager_onEnemyDied()
     {
+        // Error: [Media] - totalPoints duplica la responsabilidad de gameDataSO.CurrentScore (LevelManager ya lleva esa cuenta). Dos fuentes de verdad → divergen fácilmente entre la UI y el SO.
+        // Suggestion: [Baja] - "+10" hardcodeado. Existe gameDataSO.PointsOnKill exactamente para esto.
         totalPoints += 10;
         enemiesLeftTxt.text = gameDataSO.EnemiesLeft.ToString();
         pointsTxt.text = totalPoints.ToString();
@@ -53,6 +56,7 @@ public class UIPlayerHUD : MonoBehaviour
 
     private void FsmManager_onCivilianDied()
     {
+        // Suggestion: [Baja] - Mismo problema: "-10" hardcodeado en lugar de gameDataSO.PointsReducedOnKill.
         totalPoints -= 10;
         pointsTxt.text = totalPoints.ToString();
     }

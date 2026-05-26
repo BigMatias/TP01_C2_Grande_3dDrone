@@ -44,10 +44,12 @@ public class HealthSystem : MonoBehaviour
             onDamageDealt?.Invoke();
             onLifeUpdated?.Invoke(life, maxLife);
         }
+        // Warning: [Baja] - Debug.Log en cada golpe genera spam y allocations en build. Se nota dejado del debugging.
         Debug.Log(damage);
 
     }
 
+    // Error: [Baja] - Heal recibe int pero life y maxLife son float. Asimétrico con DoDamage(float).
     public void Heal(int plus)
     {
         if (plus < 0)

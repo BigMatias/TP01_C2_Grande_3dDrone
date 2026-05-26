@@ -27,6 +27,8 @@ public class AudioManager : MonoBehaviour
     {
         FsmManager.onEnemyShoot += FsmManager_onEnemyShoot; ;
         LevelManager.onLevelFinished += LevelManager_onLevelFinished;
+        // Bug: [Media] - LevelManager.onGameOver y onLevelFinished se suscriben acá pero abajo en OnDestroy NO se desuscriben.
+        // Si el AudioManager se destruye al cambiar escena, el delegate queda apuntando a objeto muerto → MissingReferenceException en el próximo Game Over.
         LevelManager.onGameOver += LevelManager_onGameOver;
         PlayerController.onPlayerDied += PlayerMovement_playerDied;
         PlayerController.onPlayerHurt += PlayerController_onPlayerHurt;
@@ -57,6 +59,7 @@ public class AudioManager : MonoBehaviour
 
     private void Update()
     {
+        // Warning: [Media] - Polling de isPlaying cada frame para algo que ocurre cada varios minutos. Mejor usar music[randomIndex].length y ejecutar luego en una corrutina
         if (!audioSourceMusic.isPlaying)
         {
             PlayRandomMusic();

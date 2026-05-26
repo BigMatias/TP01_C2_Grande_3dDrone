@@ -68,6 +68,7 @@ public class StateWalking : StateBase
 
     public override void OnEnter()
     {
+        // Warning: [Media] - Debug.Log en cada entrada al estado: con muchos NPCs spawneados es spam constante en consola.
         Debug.Log("Walking");
         agent.isStopped = false;
         agent.updateRotation = true;
@@ -112,6 +113,7 @@ public class StateShoot : StateBase
 
     public override void OnEnter()
     {
+        // Warning: [Media] - Debug.Log en cada entrada al estado.
         Debug.Log("Shooting");
         agent.isStopped = true;
         agent.updateRotation = false;

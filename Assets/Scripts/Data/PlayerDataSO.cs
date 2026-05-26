@@ -18,6 +18,7 @@ public class PlayerDataSO : ScriptableObject
     public float BulletSpeed;
     public float SecondaryShotDamage;
     public float SecondaryShotCD;
+    // Warning: [Media] - BulletQuantityInstantiate es un conteo, debe ser int.
     public float BulletQuantityInstantiate;
     [Header("Damage Depending on Speed")]
     public float FirstSpeedThreshold;

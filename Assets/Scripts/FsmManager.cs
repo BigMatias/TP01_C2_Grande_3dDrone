@@ -19,6 +19,7 @@ public class FsmManager : MonoBehaviour
     public static event Action onCivilianDied;
 
     private CitizensSpawner citizenSpawner;
+    // Suggestion: [Media] - waypoints es público. Debería ser private con property readonly o exponerse por método.
     public Transform[] waypoints;
     private GameObject waypointsHolder;
     private List<StateBase> states = new List<StateBase>();
@@ -31,6 +32,8 @@ public class FsmManager : MonoBehaviour
         healthSystem = GetComponent<HealthSystem>();
         healthSystem.onDie += HealthSystem_onDie;
 
+        // Warning: [Alta] - Tres GameObject.Find consecutivos en cada NPC spawneado. Con 20 enemigos + civiles, esto recorre la jerarquía completa decenas de veces al iniciar la escena. Pasar referencias o usar un Registry/Singleton.
+        // Bug: [Alta] - Todos son magic strings. Cualquier renombre de "Waypoints", "Ciudadanos" o "Racing Drone Merged" rompe el juego con NullReferenceException.
         waypointsHolder = GameObject.Find("Waypoints");
         citizenSpawner = GameObject.Find("Ciudadanos").GetComponent<CitizensSpawner>();
         waypoints = new Transform[waypointsHolder.transform.childCount];
@@ -44,6 +47,7 @@ public class FsmManager : MonoBehaviour
         foreach (StateBase state in states)
             state.Initialize(animator, this, agent);
 
+        // Bug: [Media] - Se asigna currentState pero NUNCA se llama a currentState.OnEnter().
         currentState = FindState(StateType.Idle);
     }
 
@@ -62,6 +66,7 @@ public class FsmManager : MonoBehaviour
 
     private void Update()
     {
+        // Warning: [Alta] - CheckPlayerPosition se llama TODOS los frames y dispara SwitchState constantemente.
         CheckPlayerPosition();
         if (currentState!=null)
             currentState.OnUpdate();
@@ -120,6 +125,8 @@ public class FsmManager : MonoBehaviour
     {
         if (npcType == NpcType.Enemy)
         {
+            // Warning: [Media] - Vector3.Distance hace sqrt() innecesario para una simple comparación de cercanía. Usar (a-b).sqrMagnitude contra 30*30 = 900 es estándar y más barato.
+            // Suggestion: [Baja] - "30" magic number. Debería estar en CitizenDataSO como AggroRange y serializado.
             if (Vector3.Distance(playerTarget.transform.position, transform.position) < 30)
             {
                 SwitchState(StateType.Shoot);

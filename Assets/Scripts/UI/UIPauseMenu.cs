@@ -40,6 +40,7 @@ public class UIPauseMenu : MonoBehaviour
 
     private void OnExitBtnClicked()
     {
+        // Bug: [Alta] - "MainMenuScene" acá vs "MainMenu" en UIGameOver.cs: uno de los dos crashea con "Scene couldn't be loaded" según cómo esté nombrada la escena en Build Settings. Magic strings sin centralizar = error garantizado.
         SceneManager.LoadScene("MainMenuScene");
     }
 

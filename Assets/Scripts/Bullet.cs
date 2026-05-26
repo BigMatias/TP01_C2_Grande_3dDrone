@@ -15,6 +15,8 @@ public class Bullet : MonoBehaviour
 
     private void Awake()
     {
+        // Warning: [Alta] - GameObject.Find por cada bala instanciada del pool. Recorre toda la jerarquía. Pasar el spawner por Init() o un Setup(spawner) es trivial y mucho más barato.
+        // Bug: [Alta] - "Ciudadanos" es magic string (Como los number magic pero de string) . Si el GameObject se renombra o no existe, GetComponent sobre null lanza NullReferenceException y la bala queda inservible.
         spawner = GameObject.Find("Ciudadanos").GetComponent<CitizensSpawner>();
     }
 
@@ -33,6 +35,7 @@ public class Bullet : MonoBehaviour
         if (t >= 1f)
         {
             transform.position = targetPos;
+            // Error: [Crítica] - Contradicción de patrones: la clase usa pool (ReturnBulletToPool) PERO acá Destroy(gameObject).
             Destroy(gameObject);
             return;
         }
@@ -69,10 +72,12 @@ public class Bullet : MonoBehaviour
     {
         if (collision.gameObject.layer == (int)Layers.Player)
         {
+            // Bug: [Alta] - Si Player no tiene HealthSystem (o se pierde por bug), targetHealth es null y DoDamage rompe con NullReferenceException. Falta if (targetHealth != null).
             HealthSystem targetHealth = collision.gameObject.GetComponent<HealthSystem>();
             targetHealth.DoDamage(citizenDataSO.EnemyBulletDamage);
         }
+        // Error: [Media] - La bala vuelve al pool ante cualquier colisión (paredes, suelo, civiles, NPCs). Combinado con el Destroy() de Update, el pool se llena de referencias inválidas.
         spawner.ReturnBulletToPool(gameObject);
-        
+
     }
 }

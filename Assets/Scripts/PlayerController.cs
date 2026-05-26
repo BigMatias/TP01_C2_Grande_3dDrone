@@ -35,21 +35,26 @@ public class PlayerController : MonoBehaviour
     public static event Action onPlayerShootM2;
     public static event Action onPlayerHurt;
 
+    // Warning: [Media] - Singleton público sin encapsular. Cualquier script puede sobrescribirlo. Debería ser { get; private set; }.
     public static PlayerController Instance;
     private float shootCdAux;
 
     private void Awake()
     {
+        // Bug: [Media] - No se valida si ya hay otra instancia.
         Instance  = this;
+        // Warning: [Alta] - "PlayerBullets" es un magic string acoplado al nombre del hijo en jerarquía. Si alguien renombra el GameObject, esto devuelve null y rompe InstantiateBullets() silenciosamente.
         playerBullets = transform.Find("PlayerBullets");
         healthSystem = GetComponent<HealthSystem>();
         healthSystem.onDie += HealthSystem_onDie;
+        // Error: [Baja] - Doble punto y coma al final (";;").
         healthSystem.onDamageDealt += HealthSystem_onDamageDealt; ;
         rb = GetComponent<Rigidbody>();
     }
 
     private void Start()
     {
+        // Warning: [Baja] - bulletPool ya se inicializa en la declaración del campo (línea 25).
         bulletPool = new Queue<GameObject>();
         InstantiateBullets();
     }
@@ -81,7 +86,8 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Movement();
-        Rotate();        
+        // Bug: [Alta] - Rotate() llama transform.Rotate sobre un objeto con Rigidbody y dentro de FixedUpdate. Esto pelea con el motor físico, produce jittering y puede provocar NaN en colisiones. Lo correcto: rb.MoveRotation(...).
+        Rotate();
     }
 
     private void HealthSystem_onDie()
@@ -173,6 +179,7 @@ public class PlayerController : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, shootRange, hitLayers))
             {
+                // Warning: [Baja] - Debug.Log activo en build → spam en consola y costo de GC por concatenación de string en cada disparo.
                 Debug.Log("Impacto en: " + hit.collider.name);
                 endPoint = hit.point;
 
@@ -194,12 +201,14 @@ public class PlayerController : MonoBehaviour
 
     private void SecondaryShoot()
     {
+        // Error: [Alta] - shootCdAux se decrementa pero NUNCA se compara antes de disparar. El cooldown está "escrito" pero no se aplica: se puede disparar M2 cada frame. playerDataSO.SecondaryShotCD queda desconectado.
         shootCdAux -= Time.deltaTime;
 
         if (Input.GetMouseButtonDown(1))
         {
             onPlayerShootM2?.Invoke();
 
+            // Warning: [Alta] - Camera.main internamente hace FindGameObjectWithTag("MainCamera"). Ejecutarlo en cada disparo es costoso; cachear en awake
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             Vector3 targetPoint;
@@ -213,15 +222,18 @@ public class PlayerController : MonoBehaviour
                 targetPoint = ray.origin + ray.direction * 50f;
             }
 
+            // Bug: [Crítica] - Si bulletPool está vacío (más disparos que BulletQuantityInstantiate o balas todavía viajando), Dequeue() lanza InvalidOperationException. No hay TryDequeue ni expansión del pool.
             GameObject bullet = bulletPool.Dequeue();
 
             bullet.SetActive(true);
 
+            // Warning: [Media] - GetComponent<PlayerBullet>() en cada disparo. Si las balas se reciclan, cachear el componente en InstantiateBullets() evita este costo.
             bullet.GetComponent<PlayerBullet>().Init(
                 shootPoint.position,
                 targetPoint,
-                2f,       
-                playerDataSO.BulletSpeed        
+                // Suggestion: [Baja] - Magic numbers (2f, 100f, 50f en este método). Deberían vivir como campos serializados o en el ScriptableObject.
+                2f,
+                playerDataSO.BulletSpeed
             );
         }
     }
@@ -252,6 +264,7 @@ public class PlayerController : MonoBehaviour
     private void Rotate()
     {
         Vector3 angle = new Vector3(playerDataSO.MouseSens * (Input.GetAxis("Mouse Y") * - 1), playerDataSO.MouseSens * Input.GetAxis("Mouse X"));
+        // Bug: [Media] - transform.Rotate sobre un Rigidbody (debería ser rb.MoveRotation). Además HandleRotation() ya rota en Z desde Update: hay dos sistemas de rotación operando sobre el mismo transform, lo que produce conflictos visuales.
         transform.Rotate(angle);
     }
 
@@ -262,6 +275,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
+        // Warning: [Media] - Comparar layer con (int)Layers.Obstacles asume que el enum representa el ÍNDICE numérico de la capa en el Tag&Layer Manager. Funciona porque coincide pero es frágil ante reordenamientos. Mejor LayerMask serializado o LayerMask.NameToLayer.
         if (other.gameObject.layer == (int)Layers.Obstacles)
         {
             CrashedWithObstacle(other.relativeVelocity.magnitude);

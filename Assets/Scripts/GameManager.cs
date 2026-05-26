@@ -3,6 +3,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [Header("References")]
+    // Suggestion: [Baja] - Convención de C#/Unity: campos privados deberían ir en camelCase (pauseMenu, optionsMenu).
     [SerializeField] private GameObject PauseMenu;
     [SerializeField] private GameObject OptionsMenu;
 
@@ -26,6 +27,7 @@ public class GameManager : MonoBehaviour
             if (!gamePaused)
             {
                 PauseGame();
+                // Warning: [Baja] - PauseMenu ya es un GameObject; ".gameObject" sobre un GameObject es redundante.
                 PauseMenu.gameObject.SetActive(true);
                 OptionsMenu.gameObject.SetActive(false);
             }

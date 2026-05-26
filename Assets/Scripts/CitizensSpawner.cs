@@ -25,6 +25,7 @@ public class CitizensSpawner : MonoBehaviour
         {
             spawnPoints[i] = spawnPointsHolder.transform.GetChild(i);
         }
+        // Warning: [Baja] - Las tres colas ya se inicializan inline en la declaración (líneas 16-18).
         enemyPool = new Queue<GameObject>();
         civilianPool = new Queue<GameObject>();
         bulletPool = new Queue<GameObject>();
@@ -33,6 +34,8 @@ public class CitizensSpawner : MonoBehaviour
         InstantiateBullets();
     }
 
+    // Suggestion: [Alta] - Clase monolítica: tres cases del switch son casi idénticos (60+ líneas duplicadas por nivel).
+    // [Visto en clase]
     private void InitializePool()
     {
         switch (gameDataSO.CurrentLevel)
@@ -48,6 +51,7 @@ public class CitizensSpawner : MonoBehaviour
                         int index = Random.Range(0, spawnPoints.Length);
                         Transform spawnPoint = spawnPoints[index];
 
+                        // Error: [Alta] - Anti-patrón: Enqueue inmediatamente seguido de Dequeue del MISMO objeto.
                         obj = enemyPool.Dequeue();
 
                         obj.transform.position = spawnPoint.position;
@@ -57,6 +61,7 @@ public class CitizensSpawner : MonoBehaviour
 
                     for (int i = 0; i < citizenDataSO.CivilianSpawnQuantityLevel1; i++)
                     {
+                        // Bug: [Media] - En el caso 1, civilian se Instancia SIN SetActive(false) inicial (a diferencia de Level2/3). Diferencia silenciosa entre niveles → comportamiento inconsistente.
                         GameObject obj = Instantiate(civilian, civilianParent);
                         civilianPool.Enqueue(obj);
 
@@ -175,6 +180,7 @@ public class CitizensSpawner : MonoBehaviour
 
     public GameObject GetBullet()
     {
+        // Bug: [Crítica] - Sin chequeo de cola vacía. Si los enemigos disparan más rápido de lo que las balas vuelven.
         GameObject bullet = bulletPool.Dequeue();
         return bullet;
     }

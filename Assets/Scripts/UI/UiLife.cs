@@ -14,6 +14,7 @@ public class UiLife : MonoBehaviour
 
     private void Start()
     {
+        // Bug: [Alta] - Image.fillAmount está en rango [0,1]. Asignar 100 lo clampa a 1 internamente, pero indica desconocimiento.
         barLife.fillAmount = 100;
     }
 

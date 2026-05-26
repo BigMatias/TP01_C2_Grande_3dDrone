@@ -28,6 +28,7 @@ public class UIGameOver : MonoBehaviour
 
     private void OnNoBtnClicked()
     {
+        // Bug: [Alta] - "MainMenu" (sin el sufijo "Scene"). UIPauseMenu.cs carga "MainMenuScene": una de las dos pantallas falla.
         SceneManager.LoadScene("MainMenu");
     }
 
